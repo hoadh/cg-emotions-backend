@@ -5,9 +5,10 @@
   "main": "app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "prod": "tsc && node ./build/app.js",
-    "dev": "nodemon ./build/app.js"
+    "copy": "cp -rf ./src/app/views ./build/views",
+    "build": "rm -rf ./build/* && npm run copy && tsc",
+    "prod": "npm run build && node ./build/app.js",
+    "live": "tsc -w & nodemon ./build/app.js"
   },
   "author": "",
   "license": "ISC",
