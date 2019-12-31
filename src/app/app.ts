@@ -1,5 +1,5 @@
-import express = require('express');
-import path = require('path');
+import express from 'express';
+import path from 'path';
 
 const app: express.Application = express();
 const VIEW_DIR = '/views/';
