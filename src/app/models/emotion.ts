@@ -1,14 +1,9 @@
-import { prop, arrayProp, getModelForClass } from '@typegoose/typegoose';
+import { prop, arrayProp } from '@typegoose/typegoose';
+import { EmotionList } from './emotions.enum';
 
-// enum EmotionList {
-//   HAPPY = 'happy',
-//   NORMAL = 'normal',
-//   ANGER = 'anger',
-// }
-
-class Emotion {
+export class Emotion {
   @prop()
-  public name?: string;
+  public name?: EmotionList;
 
   // @arrayProp({ items: String })
   // public history?: EmotionList[];
@@ -19,5 +14,3 @@ class Emotion {
   // @prop()
   // public idProvider?: string;
 }
-
-export default { Emotion, EmotionRepo: getModelForClass(Emotion) };

@@ -1,10 +1,13 @@
 import connect from './connect';
-import emotion from './models/emotion';
+import { EmotionList } from './models/emotions.enum';
+import { Emotion }  from './models/emotion';
+import { EmotionRepo } from './repositories/emotion.repo';
 connect({ db: 'mongodb://localhost:27017/cgemotions'});
 
 (async () => {
-  const { _id: id } = await emotion.EmotionRepo.create({ name: 'happy' }); // an "as" assertion, to have types for all properties
-  const emo = await emotion.EmotionRepo.findById(id).exec();
-
-  console.log(emo); // prints { _id: 59218f686409d670a97e53e0, name: 'JohnDoe', __v: 0 }
+  const emotion: Emotion = { name: EmotionList.HAPPY };
+  const { _id: id } = await EmotionRepo.create(emotion); // an "as" assertion, to have types for all properties
+  const emo = await EmotionRepo.findById(id).exec();
+  console.log(emo);
 })();
+
