@@ -38,7 +38,7 @@ app.get('/update', (req: Request, res: Response) => {
     },
     series: [10, 10, 10, 10, 60]
   };
-  socketServer.emit('EVENTS.UPDATE_DASHBOARD', data);
+  socketServer.emit(EVENTS.UPDATE_DASHBOARD, data);
   res.status(200);
   res.send('ok');
 });
