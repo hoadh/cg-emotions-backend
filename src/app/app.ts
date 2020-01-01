@@ -11,7 +11,7 @@ const app: Application = express();
 const httpServer: http.Server = new http.Server(app);
 const socketServer: Server = io(httpServer);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 5000;
 
 httpServer.listen(PORT, () => console.log(`listening on *: ${PORT}`));
 
