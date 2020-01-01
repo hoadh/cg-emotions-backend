@@ -1,6 +1,6 @@
 import path from 'path';
 import http from 'http';
-import express, { Request, Response, Application } from 'express';
+import express, { Application } from 'express';
 import bodyParser from 'body-parser';
 import io, { Server } from 'socket.io';
 import connectIO from './connect-io';
