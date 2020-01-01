@@ -1,15 +1,15 @@
 import { prop, arrayProp } from '@typegoose/typegoose';
-import { EmotionList } from './emotions.enum';
+import { Emotions } from './emotions.enum';
 
 export class Emotion {
   @prop()
-  public name?: EmotionList;
+  public emotion?: Emotions;
 
   // @arrayProp({ items: String })
   // public history?: EmotionList[];
 
-  // @prop()
-  // public userId?: string;
+  @prop()
+  public userId?: string;
 
   // @prop()
   // public idProvider?: string;
