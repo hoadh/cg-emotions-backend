@@ -1,9 +1,13 @@
 import path from 'path';
 import http from 'http';
-import express from 'express';
+
+import express, { Request, Response, Application } from 'express';
+import bodyParser from 'body-parser';
+
 import socketIO, { Socket } from 'socket.io';
 
-const app: express.Application = express();
+
+const app: Application = express();
 const httpServer: http.Server = new http.Server(app);
 const socketServer: socketIO.Server = socketIO(httpServer);
 
@@ -21,13 +25,15 @@ socketServer.on('connection', (socket: Socket) => {
 });
 
 
-app.use('/assets', express.static(path.join(__dirname, '../src/assets')))
+app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.sendFile(__dirname + "/views/dashboard.html");
 });
 
-app.get('/update', (req, res) => {
+app.get('/update', (req: Request, res: Response) => {
   const data = {
     recent: {
       time: Date.now(),
@@ -40,5 +46,3 @@ app.get('/update', (req, res) => {
   res.status(200);
   res.send('ok');
 })
-
-// app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`));
