@@ -1,0 +1,3 @@
+export enum EVENTS {
+  UPDATE_DASHBOARD = 'UPDATE_DASHBOARD'
+};
