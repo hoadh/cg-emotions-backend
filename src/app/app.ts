@@ -5,7 +5,7 @@ import express, { Request, Response, Application } from 'express';
 import bodyParser from 'body-parser';
 
 import socketIO, { Socket } from 'socket.io';
-
+import connect from './connect';
 
 const app: Application = express();
 const httpServer: http.Server = new http.Server(app);
@@ -15,6 +15,8 @@ const ACTION_UPDATE_DASHBOARD = "update dashboard";
 const PORT = 3001;
 
 httpServer.listen(PORT, () => console.log(`listening on *: ${PORT}`));
+
+connect({ db: 'mongodb://localhost:27017/cgemotions' });
 
 socketServer.on('connection', (socket: Socket) => {
   console.log('A new connection has established at ' + Date.now());
