@@ -32,9 +32,17 @@ export default ({ app, broadcast, socket }: TRouteInput) => {
   });
 
   app.post('/today', async (req: Request, res: Response) => {
-    const emotionInput: IEmotionInput = req.body;
+    const emotionInput = req.body as IEmotionInput;
     console.log(emotionInput);
     const emotion = await EmotionService.updateTodayEmotion(emotionInput);
+    const series = await EmotionService.getStatData();
+    const stat = {
+      recent: {
+        time: Date.now()
+      },
+      series
+    }
+    socket.emit(EVENTS.UPDATE_DASHBOARD, stat);
     res.send({ message: "ok", data: emotion});
   });
 

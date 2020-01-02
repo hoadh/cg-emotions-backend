@@ -2,6 +2,7 @@ import { Emotion } from "../models/emotion";
 import { EmotionRepo } from '../repositories/emotion.repo';
 import { IEmotionInput } from '../models/emotion.req';
 import { SubEmotion } from '../models/sub-emotion';
+import { Emotions } from "../models/emotions.enum";
 
 function getSystemUTCDate(now: Date): string {
   return `${now.getFullYear()}-${now.getMonth()+1}-${now.getUTCDate()}`;
@@ -56,6 +57,32 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
     });
 }
 
+async function getStatData(): Promise<number[]> {
+  const now = new Date();
+  const todayFilter = {
+    "createdAt": {
+      "$gte": new Date(now.getFullYear(), now.getMonth(), now.getUTCDate()),
+      "$lt": new Date(now.getFullYear(), now.getMonth(), now.getUTCDate() + 1)
+    }
+  };
+
+  const savedEmotions = await EmotionRepo.find(todayFilter);
+
+  let happy = 0, normal = 0, anger = 0;
+  for (let i = 0; i < savedEmotions.length; i++) {
+    switch (savedEmotions[i].emotion) {
+      case Emotions.HAPPY: happy++;break;
+      case Emotions.NORMAL: normal++;break;
+      case Emotions.ANGER: anger++;break;
+    }
+  }
+
+  return new Promise( (resolve, reject) => {
+    resolve([happy, 0, normal, 0, anger]);
+  })
+}
+
 export default {
-  updateTodayEmotion
+  updateTodayEmotion,
+  getStatData
 }
