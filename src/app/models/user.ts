@@ -9,5 +9,5 @@ export class User {
   public email?: string;
 
   @prop()
-  public sub?: string;
+  public userId?: string;
 }
