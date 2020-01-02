@@ -15,18 +15,16 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
   const savedEmotions = await EmotionRepo.find(condition);
 
   let uniqueEmotion: Emotion = {
-    emotion: emotion.emotion,
-    userId: emotion.userId,
+    ...emotion,
     createdAt: now,
     updatedAt: now,
-    history: [],
-    note: emotion.note,
-    user: emotion.user
+    history: []
   };
 
   if (savedEmotions.length > 0) {
     uniqueEmotion = savedEmotions[0];
 
+    // get previous updated emotion and save into history array
     let history: SubEmotion[] = uniqueEmotion.history || [];
     for (let i = 0; i < savedEmotions.length; i++) {
       history.push({
@@ -35,14 +33,16 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
         note: savedEmotions[i].note
       });
     }
-    EmotionRepo.deleteMany(condition);
+    uniqueEmotion.history = history;
+    // end
 
     uniqueEmotion.emotion = emotion.emotion;
     uniqueEmotion.updatedAt = now;
     uniqueEmotion.note = emotion.note;
     uniqueEmotion.user = emotion.user;
     uniqueEmotion.userId = emotion.userId;
-    uniqueEmotion.history = history;
+
+    EmotionRepo.deleteMany(condition);
   }
 
   return await EmotionRepo.create(uniqueEmotion)
