@@ -10,10 +10,8 @@ function getSystemUTCDate(now: Date): string {
 async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
 
   const now = new Date();
-  const atDate = getSystemUTCDate(now);
 
-
-  const userFilter = { emotion: emotion.emotion, userId: emotion.userId };
+  const userFilter = { userId: emotion.userId };
   const todayFilter ={
     "createdAt": {
       "$gte": new Date(now.getFullYear(), now.getMonth(), now.getUTCDate()),
@@ -29,7 +27,9 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
   let uniqueEmotion: Emotion = {
     emotion: emotion.emotion,
     userId: emotion.userId,
-    createdAt: now
+    createdAt: now,
+    updatedAt: now,
+    history: []
   };
 
   if (savedEmotions.length > 0) {
@@ -42,11 +42,12 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
         updatedAt: savedEmotions[i].updatedAt
       });
     }
-    uniqueEmotion.history = history;
     EmotionRepo.deleteMany(condition);
-  }
 
-  uniqueEmotion.updatedAt = now;
+    uniqueEmotion.emotion = emotion.emotion;
+    uniqueEmotion.updatedAt = now;
+    uniqueEmotion.history = history;
+  }
 
   return await EmotionRepo.create(uniqueEmotion)
     .then((data: Emotion) => data)
