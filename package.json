@@ -8,7 +8,8 @@
   "main": "app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "copy": "cp -rf ./src/app/views ./build/views",
+    "init": "mkdir -p ./build/views",
+    "copy": "npm run init && cp -rf ./src/app/views ./build/views",
     "build": "rm -rf ./build/* && npm run copy && tsc",
     "prod": "npm run build && node ./build/app.js",
     "live": "tsc -w & nodemon ./build/app.js"
