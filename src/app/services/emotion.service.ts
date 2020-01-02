@@ -30,7 +30,8 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
     userId: emotion.userId,
     createdAt: now,
     updatedAt: now,
-    history: []
+    history: [],
+    note: emotion.note
   };
 
   if (savedEmotions.length > 0) {
@@ -40,13 +41,15 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
     for (let i = 0; i < savedEmotions.length; i++) {
       history.push({
         emotion: savedEmotions[i].emotion,
-        updatedAt: savedEmotions[i].updatedAt
+        updatedAt: savedEmotions[i].updatedAt,
+        note: savedEmotions[i].note
       });
     }
     EmotionRepo.deleteMany(condition);
 
     uniqueEmotion.emotion = emotion.emotion;
     uniqueEmotion.updatedAt = now;
+    uniqueEmotion.note = emotion.note;
     uniqueEmotion.history = history;
   }
 

@@ -1,6 +1,7 @@
 import { prop, arrayProp } from '@typegoose/typegoose';
 import { Emotions } from './emotions.enum';
 import { SubEmotion } from './sub-emotion';
+import { Note } from './note';
 
 export class Emotion {
   @prop()
@@ -20,4 +21,7 @@ export class Emotion {
 
   @prop()
   public updatedAt?: Date;
+
+  @prop()
+  public note?: Note;
 }
