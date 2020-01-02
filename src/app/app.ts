@@ -7,16 +7,18 @@ import io, { Server } from 'socket.io';
 import connectIO from './connect-io';
 import connectDB from './connect';
 import routes from './routes';
+import config from './config';
 
 const app: Application = express();
 const httpServer: http.Server = new http.Server(app);
 const socketServer: Server = io(httpServer);
 
-const PORT = process.env.PORT || 5000;
+const PORT = config.PORT || 5000;
 
 httpServer.listen(PORT, () => console.log(`listening on *: ${PORT}`));
 
-connectDB({ db: 'mongodb://localhost:27017/cgemotions' });
+const MONGODB_URI = config.MONGODB_URI || '';
+connectDB({ db: MONGODB_URI });
 connectIO(socketServer);
 
 app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
