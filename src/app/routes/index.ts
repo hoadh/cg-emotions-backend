@@ -15,20 +15,16 @@ export default ({ app, broadcast, socket }: TRouteInput) => {
     res.sendFile(app.get('rootDir') + "/views/dashboard.html");
   });
 
-  app.get('/update', (req: Request, res: Response) => {
-    const data = {
+  app.get('/today', async (req: Request, res: Response) => {
+    const series = await EmotionService.getStatData();
+    const stat = {
       recent: {
-        time: Date.now(),
-        happy: 40,
-        anger: -10,
+        time: Date.now()
       },
-      series: [10, 10, 10, 10, 60]
-    };
-    // socketServer.emit();
-    // broadcast(EVENTS.UPDATE_DASHBOARD, data);
-    socket.emit(EVENTS.UPDATE_DASHBOARD, data);
-    res.status(200);
-    res.send('ok');
+      series
+    }
+    socket.emit(EVENTS.UPDATE_DASHBOARD, stat);
+    res.send({ message: "ok", data: stat });
   });
 
   app.post('/today', async (req: Request, res: Response) => {
