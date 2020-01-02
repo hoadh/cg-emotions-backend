@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "init": "mkdir -p ./build/views",
-    "copy": "npm run init && cp -rf ./src/app/views ./build/views",
+    "copy": "npm run init && cp -rf ./src/app/views/ ./build/views/",
     "build": "rm -rf ./build/* && npm run copy && node ./node_modules/typescript/bin/tsc",
     "prod": "npm run build && node ./build/app.js",
     "live": "tsc -w & nodemon ./build/app.js"
