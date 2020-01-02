@@ -12,10 +12,8 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
   const todayFilter = getDayFilter(now);
 
   const condition = { ...userFilter, ...todayFilter };
-  console.info(condition);
   const savedEmotions = await EmotionRepo.find(condition);
 
-  console.log(savedEmotions);
   let uniqueEmotion: Emotion = {
     emotion: emotion.emotion,
     userId: emotion.userId,
