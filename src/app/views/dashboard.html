@@ -24,26 +24,26 @@
       </div>  
       <div class="col-md-4 col-xs-12">
 
-        <ul class="list-group">
+        <ul class="list-group" id="countEmotion">
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Siêu hạnh phúc
-            <span class="badge badge-primary badge-pill">14</span>
+            <span class="badge badge-primary badge-pill">0</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Khá hạnh phúc
-            <span class="badge badge-primary badge-pill">2</span>
+            <span class="badge badge-primary badge-pill">0</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Bình thường
-            <span class="badge badge-primary badge-pill">1</span>
+            <span class="badge badge-primary badge-pill">0</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Không tốt
-            <span class="badge badge-primary badge-pill">1</span>
+            <span class="badge badge-primary badge-pill">0</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             Tào lao
-            <span class="badge badge-primary badge-pill">1</span>
+            <span class="badge badge-primary badge-pill">0</span>
           </li>
         </ul>
         <div id="recent"></div>
@@ -88,6 +88,29 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       const ACTION_UPDATE_DASHBOARD = "update dashboard";
+      const demoData = [
+        {
+          emotion: "Siêu hạnh phúc",
+          count: 20
+        },
+        {
+          emotion: "Khá hạnh phúc",
+          count: 20
+        },
+        {
+          emotion: "Bình thường",
+          count: 20
+        },
+        {
+          emotion: "Không tốt",
+          count: 20
+        },
+        {
+          emotion: "Tào lao",
+          count: 20
+        },
+      ];
+      updateCountEmotionUI(demoData);
       var options = {
         title: {
             // text: "Biểu đồ 2020",
@@ -107,8 +130,20 @@
         chart: {
           type: "donut"
         },
-        series: [20, 20, 20, 20, 20],
-        labels: ["Siêu hạnh phúc", "Khá hạnh phúc", "Bình thường", "Không tốt", "Tào lao"],
+        series: [
+          demoData[0].count,
+          demoData[1].count,
+          demoData[2].count,
+          demoData[3].count,
+          demoData[4].count,
+        ],
+        labels: [
+          demoData[0].emotion,
+          demoData[1].emotion,
+          demoData[2].emotion,
+          demoData[3].emotion,
+          demoData[4].emotion,
+        ],
         responsive: [
           {
             breakpoint: 480,
@@ -131,7 +166,14 @@
         var socket = io();
         socket.on(ACTION_UPDATE_DASHBOARD, function(data) {
           const recentHtml = buildRecentHtml(data);
-          updateRecent(recentHtml);
+          // updateRecent(recentHtml);
+          demoData[0].count = data.series[0];
+          demoData[1].count = data.series[1];
+          demoData[2].count = data.series[2];
+          demoData[3].count = data.series[3];
+          demoData[4].count = data.series[4];
+
+          updateCountEmotionUI(demoData);
           chart.updateSeries(data.series, true);
         });
       };
@@ -171,6 +213,21 @@
       var sec = a.getSeconds();
       var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
       return time;
+    }
+
+    function updateCountEmotionUI(data) {
+      var countEmotion = document.querySelector("#countEmotion");
+      let html = '';
+      for (let i = 0; i < data.length; i++) {
+        html += `<li class="list-group-item d-flex justify-content-between align-items-center">
+          ${data[i].emotion}
+          <span class="badge badge-primary badge-pill">
+            ${data[i].count}
+          </span></li>
+        `;
+      }
+
+      countEmotion.innerHTML = html;
     }
 
     </script>
