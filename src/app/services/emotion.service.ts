@@ -13,12 +13,7 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
   const now = new Date();
 
   const userFilter = { userId: emotion.userId };
-  const todayFilter ={
-    "createdAt": {
-      "$gte": new Date(now.getFullYear(), now.getMonth(), now.getUTCDate()),
-      "$lt": new Date(now.getFullYear(), now.getMonth(), now.getUTCDate() + 1)
-    }
-  };
+  const todayFilter = getDayFilter(now);
 
   const condition = { ...userFilter, ...todayFilter };
   console.info(condition);
@@ -65,26 +60,10 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
 
 async function getStatData(): Promise<number[]> {
   const now = new Date();
-  const todayFilter = {
-    "createdAt": {
-      "$gte": new Date(now.getFullYear(), now.getMonth(), now.getUTCDate()),
-      "$lt": new Date(now.getFullYear(), now.getMonth(), now.getUTCDate() + 1)
-    }
-  };
+  const todayFilter = getDayFilter(now);
 
   const savedEmotions = await EmotionRepo.find(todayFilter);
-
-  let happy = 0, good = 0, normal = 0, bad = 0,anger = 0;
-  for (let i = 0; i < savedEmotions.length; i++) {
-    switch (savedEmotions[i].emotion) {
-      case Emotions.HAPPY: happy++;break;
-      case Emotions.GOOD: good++;break;
-      case Emotions.NORMAL: normal++;break;
-      case Emotions.BAD: bad++; break;
-      case Emotions.ANGER: anger++;break;
-    }
-  }
-
+  const { happy, good, normal, bad, anger } = countEmotions(savedEmotions);
   return new Promise( (resolve, reject) => {
     resolve([happy, good, normal, bad, anger]);
   })
@@ -93,4 +72,31 @@ async function getStatData(): Promise<number[]> {
 export default {
   updateTodayEmotion,
   getStatData
+}
+
+function countEmotions(savedEmotions: Emotion[]) {
+  let happy = 0, good = 0, normal = 0, bad = 0, anger = 0;
+  for (let i = 0; i < savedEmotions.length; i++) {
+    switch (savedEmotions[i].emotion) {
+      case Emotions.HAPPY: happy++; break;
+      case Emotions.GOOD: good++; break;
+      case Emotions.NORMAL: normal++; break;
+      case Emotions.BAD: bad++; break;
+      case Emotions.ANGER: anger++; break;
+    }
+  }
+  return {
+    happy, good, normal, bad, anger
+  }
+}
+
+function getDayFilter(date: Date) {
+  const now = new Date();
+  const todayFilter = {
+    "createdAt": {
+      "$gte": new Date(date.getFullYear(), date.getMonth(), date.getUTCDate()),
+      "$lt": new Date(date.getFullYear(), date.getMonth(), date.getUTCDate() + 1)
+    }
+  };
+  return todayFilter;
 }
