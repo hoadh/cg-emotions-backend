@@ -4,10 +4,6 @@ import { IEmotionInput } from '../models/emotion.req';
 import { SubEmotion } from '../models/sub-emotion';
 import { Emotions } from "../models/emotions.enum";
 
-function getSystemUTCDate(now: Date): string {
-  return `${now.getFullYear()}-${now.getMonth()+1}-${now.getUTCDate()}`;
-}
-
 async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
 
   const now = new Date();
