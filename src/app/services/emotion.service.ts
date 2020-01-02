@@ -63,9 +63,25 @@ async function getStatData(): Promise<number[]> {
   })
 }
 
+async function getLastestUpdates(limit: number = 3):Promise<Emotion[]> {
+  const now = new Date();
+  const condition = getDayFilter(now);
+  const projection = { "emotion": 1, "user": 1, "updatedAt": 1, "note": 1 };
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const emotions = await EmotionRepo.find(condition, projection).limit(limit).sort({ "updatedAt": -1 });
+      resolve(emotions);
+    } catch (e) {
+      reject(e);
+    }
+  })
+}
+
 export default {
   updateTodayEmotion,
-  getStatData
+  getStatData,
+  getLastestUpdates
 }
 
 function countEmotions(savedEmotions: Emotion[]) {

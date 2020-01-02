@@ -27,6 +27,11 @@ export default ({ app, broadcast, socket }: TRouteInput) => {
     res.send({ message: "ok", data: stat });
   });
 
+  app.get('/recents', async (req: Request, res: Response) => {
+    const emotions = await EmotionService.getLastestUpdates();
+    res.send({ message: "ok", data: emotions });
+  });
+
   app.post('/today', async (req: Request, res: Response) => {
     const emotionInput = req.body as IEmotionInput;
     console.log(emotionInput);
