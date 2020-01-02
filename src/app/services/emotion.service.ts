@@ -68,17 +68,19 @@ async function getStatData(): Promise<number[]> {
 
   const savedEmotions = await EmotionRepo.find(todayFilter);
 
-  let happy = 0, normal = 0, anger = 0;
+  let happy = 0, good = 0, normal = 0, bad = 0,anger = 0;
   for (let i = 0; i < savedEmotions.length; i++) {
     switch (savedEmotions[i].emotion) {
       case Emotions.HAPPY: happy++;break;
+      case Emotions.GOOD: good++;break;
       case Emotions.NORMAL: normal++;break;
+      case Emotions.BAD: bad++; break;
       case Emotions.ANGER: anger++;break;
     }
   }
 
   return new Promise( (resolve, reject) => {
-    resolve([happy, 0, normal, 0, anger]);
+    resolve([happy, good, normal, bad, anger]);
   })
 }
 
