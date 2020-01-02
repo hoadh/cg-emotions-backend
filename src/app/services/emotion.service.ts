@@ -31,7 +31,8 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
     createdAt: now,
     updatedAt: now,
     history: [],
-    note: emotion.note
+    note: emotion.note,
+    user: emotion.user
   };
 
   if (savedEmotions.length > 0) {
@@ -50,6 +51,8 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
     uniqueEmotion.emotion = emotion.emotion;
     uniqueEmotion.updatedAt = now;
     uniqueEmotion.note = emotion.note;
+    uniqueEmotion.user = emotion.user;
+    uniqueEmotion.userId = emotion.userId;
     uniqueEmotion.history = history;
   }
 
