@@ -1,6 +1,7 @@
 import path from 'path';
 import http from 'http';
 import express, { Application } from 'express';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import io, { Server } from 'socket.io';
 import connectIO from './connect-io';
@@ -21,6 +22,7 @@ connectIO(socketServer);
 app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(cors());
 
 app.set('rootDir', __dirname);
 routes({ app, broadcast: socketServer.emit.bind(this), socket: socketServer});
