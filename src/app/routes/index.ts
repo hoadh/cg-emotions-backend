@@ -28,7 +28,8 @@ export default ({ app, broadcast, socket }: TRouteInput) => {
   });
 
   app.get('/recents', async (req: Request, res: Response) => {
-    const emotions = await EmotionService.getLastestUpdates();
+    const limit: number = parseInt(req.query.limit) || 3;
+    const emotions = await EmotionService.getLastestUpdates(limit);
     res.send({ message: "ok", data: emotions });
   });
 
