@@ -55,4 +55,16 @@ export default ({ app, broadcast, socket }: TRouteInput) => {
     res.send({ message: "ok", data: emotion});
   });
 
+  app.get('/history', async (req: Request, res: Response) => {
+    const userId = req.query.userId;
+    if (userId) {
+      const history = await EmotionService.getUserHistory(userId);
+      res.send({ message: "ok", data: history });
+    } else {
+      res.send({ message: "not found", data: {
+        userId: userId
+      } });
+    }
+  });
+
 };

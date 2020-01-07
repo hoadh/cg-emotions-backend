@@ -52,6 +52,12 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
     });
 }
 
+async function getUserHistory(userId: string): Promise<Emotion[]> {
+  const userFilter = { userId: userId };
+  const savedEmotions = await EmotionRepo.find(userFilter);
+  return new Promise((resolve, reject) => resolve(savedEmotions) );
+}
+
 async function getStatData(): Promise<number[]> {
   const now = new Date();
   const todayFilter = getDayFilter(now);
@@ -81,7 +87,8 @@ async function getLastestUpdates(limit: number = 3):Promise<Emotion[]> {
 export default {
   updateTodayEmotion,
   getStatData,
-  getLastestUpdates
+  getLastestUpdates,
+  getUserHistory
 }
 
 function countEmotions(savedEmotions: Emotion[]) {
