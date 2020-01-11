@@ -6,26 +6,28 @@ import { Emotions } from "../models/emotions.enum";
 
 async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
 
-  const now = new Date();
-
-  const userFilter = { userId: emotion.userId };
-  const todayFilter = getDayFilter(now);
+  const userFilter = { userId: emotion.userId },
+        todayFilter = getDateFilter();
 
   const condition = { ...userFilter, ...todayFilter };
   const savedEmotions = await EmotionRepo.find(condition);
 
-  let uniqueEmotion: Emotion = {
-    ...emotion,
+  const now = new Date();
+  let newEmotion: Emotion = {
+    emotion: emotion.emotion,
+    userId: emotion.userId,
     createdAt: now,
     updatedAt: now,
-    history: []
+    history: [],
+    note: emotion.note,
+    user: emotion.user
   };
 
   if (savedEmotions.length > 0) {
-    uniqueEmotion = savedEmotions[0];
+    newEmotion = savedEmotions[0];
 
     // get previous updated emotion and save into history array
-    let history: SubEmotion[] = uniqueEmotion.history || [];
+    let history: SubEmotion[] = newEmotion.history || [];
     for (let i = 0; i < savedEmotions.length; i++) {
       history.push({
         emotion: savedEmotions[i].emotion,
@@ -33,19 +35,18 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
         note: savedEmotions[i].note
       });
     }
-    uniqueEmotion.history = history;
+    newEmotion.history = history;
     // end
 
-    uniqueEmotion.emotion = emotion.emotion;
-    uniqueEmotion.updatedAt = now;
-    uniqueEmotion.note = emotion.note;
-    uniqueEmotion.user = emotion.user;
-    uniqueEmotion.userId = emotion.userId;
+    newEmotion.emotion = emotion.emotion;
+    newEmotion.updatedAt = now;
+    newEmotion.note = emotion.note;
+    newEmotion.user = emotion.user;
+    newEmotion.userId = emotion.userId;
 
-    EmotionRepo.deleteMany(condition);
+    // const deleteCount = await EmotionRepo.deleteMany(condition);
   }
-
-  return await EmotionRepo.create(uniqueEmotion)
+  return await EmotionRepo.create(newEmotion)
     .then((data: Emotion) => data)
     .catch(error => {
       throw error;
@@ -54,13 +55,12 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
 
 async function getUserHistory(userId: string): Promise<Emotion[]> {
   const userFilter = { userId: userId };
-  const savedEmotions = await EmotionRepo.find(userFilter);
+  const savedEmotions = await EmotionRepo.find(userFilter).sort({ "createdAt": -1, "updatedAt": -1 });
   return new Promise((resolve, reject) => resolve(savedEmotions) );
 }
 
 async function getStatData(): Promise<number[]> {
-  const now = new Date();
-  const todayFilter = getDayFilter(now);
+  const todayFilter = getDateFilter();
 
   const savedEmotions = await EmotionRepo.find(todayFilter);
   const { happy, good, normal, bad, anger } = countEmotions(savedEmotions);
@@ -70,13 +70,12 @@ async function getStatData(): Promise<number[]> {
 }
 
 async function getLastestUpdates(limit: number = 3):Promise<Emotion[]> {
-  const now = new Date();
-  const condition = getDayFilter(now);
+  const todayFilter = getDateFilter();
   const projection = { "emotion": 1, "user": 1, "updatedAt": 1, "note": 1 };
 
   return new Promise(async (resolve, reject) => {
     try {
-      const emotions = await EmotionRepo.find(condition, projection).limit(limit).sort({ "updatedAt": -1 });
+      const emotions = await EmotionRepo.find(todayFilter, projection).limit(limit).sort({ "updatedAt": -1 });
       resolve(emotions);
     } catch (e) {
       reject(e);
@@ -107,13 +106,42 @@ function countEmotions(savedEmotions: Emotion[]) {
   }
 }
 
-function getDayFilter(date: Date) {
-  const now = new Date();
-  const todayFilter = {
+
+function ZDate(year: number, month: number, day: number) {
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+function getLocalDate(dateInput: Date) {
+  const nDate = dateInput.toLocaleString("en-US", {
+    timeZone: "Asia/Ho_Chi_Minh"
+  });
+  let date = nDate.split(",")[0].split("/");
+  return {
+    year: Number(date[2]),
+    month: Number(date[0]),
+    day: Number(date[1])
+  };
+}
+
+function getDateFilter() {
+  let now = new Date(), 
+      next = new Date();
+  next.setDate(now.getDate() + 1);
+
+  const today = getLocalDate(now),
+        tomorrow = getLocalDate(next);
+
+  const startDate = ZDate(today.year, today.month, today.day),
+        endDate = ZDate(tomorrow.year, tomorrow.month, tomorrow.day);
+
+  startDate.setTime(startDate.getTime() - 1000);
+
+  const filter = {
     "createdAt": {
-      "$gte": new Date(date.getFullYear(), date.getMonth(), date.getUTCDate()),
-      "$lt": new Date(date.getFullYear(), date.getMonth(), date.getUTCDate() + 1)
+      "$gte": startDate,
+      "$lt": endDate
     }
   };
-  return todayFilter;
+
+  return filter;
 }
