@@ -24,6 +24,9 @@ export class Emotion {
   public updatedAt?: Date;
 
   @prop()
+  public timezoneOffset?: number;
+
+  @prop()
   public note?: Note;
 
   @prop()

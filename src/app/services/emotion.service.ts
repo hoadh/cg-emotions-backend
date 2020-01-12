@@ -3,6 +3,7 @@ import { EmotionRepo } from '../repositories/emotion.repo';
 import { IEmotionInput } from '../models/emotion.req';
 import { SubEmotion } from '../models/sub-emotion';
 import { Emotions } from "../models/emotions.enum";
+import datetime from "../core/datetime";
 
 async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
 
@@ -18,6 +19,7 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
     userId: emotion.userId,
     createdAt: now,
     updatedAt: now,
+    timezoneOffset: now.getTimezoneOffset(),
     history: [],
     note: emotion.note,
     user: emotion.user
@@ -40,6 +42,7 @@ async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
 
     newEmotion.emotion = emotion.emotion;
     newEmotion.updatedAt = now;
+    newEmotion.timezoneOffset = now.getTimezoneOffset();
     newEmotion.note = emotion.note;
     newEmotion.user = emotion.user;
     newEmotion.userId = emotion.userId;
@@ -106,35 +109,21 @@ function countEmotions(savedEmotions: Emotion[]) {
   }
 }
 
-
-function ZDate(year: number, month: number, day: number) {
-  return new Date(Date.UTC(year, month - 1, day));
-}
-
-function getLocalDate(dateInput: Date) {
-  const nDate = dateInput.toLocaleString("en-US", {
-    timeZone: "Asia/Ho_Chi_Minh"
-  });
-  let date = nDate.split(",")[0].split("/");
-  return {
-    year: Number(date[2]),
-    month: Number(date[0]),
-    day: Number(date[1])
-  };
-}
-
 function getDateFilter() {
-  let now = new Date(), 
-      next = new Date();
+  let now = new Date(),
+    next = new Date();
   next.setDate(now.getDate() + 1);
 
-  const today = getLocalDate(now),
-        tomorrow = getLocalDate(next);
+  const today = datetime.getLocalDate(now),
+    tomorrow = datetime.getLocalDate(next);
 
-  const startDate = ZDate(today.year, today.month, today.day),
-        endDate = ZDate(tomorrow.year, tomorrow.month, tomorrow.day);
+  const startDate = datetime.UTCDate(today.year, today.month, today.day),
+    endDate = datetime.UTCDate(tomorrow.year, tomorrow.month, tomorrow.day);
 
-  startDate.setTime(startDate.getTime() - 1000);
+  const minDiff = now.getTimezoneOffset();
+  const miliDiff = minDiff * 60 * 1000;
+  startDate.setTime(startDate.getTime() + miliDiff);
+  endDate.setTime(endDate.getTime() + miliDiff);
 
   const filter = {
     "createdAt": {
