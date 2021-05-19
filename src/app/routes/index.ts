@@ -23,12 +23,11 @@ export default ({ app, broadcast, socket }: TRouteInput) => {
       },
       series
     }
-    socket.emit(EVENTS.UPDATE_DASHBOARD, stat);
     res.send({ message: "ok", data: stat });
   });
 
   app.get('/recents', async (req: Request, res: Response) => {
-    const limit: number = parseInt(req.query.limit) || 3;
+    const limit: number = parseInt(req.query.limit as string) || 3;
     const emotions = await EmotionService.getLastestUpdates(limit);
     res.send({ message: "ok", data: emotions });
   });
@@ -56,7 +55,7 @@ export default ({ app, broadcast, socket }: TRouteInput) => {
   });
 
   app.get('/history', async (req: Request, res: Response) => {
-    const userId = req.query.userId;
+    const userId: string = req.query.userId as string;
     if (userId) {
       const history = await EmotionService.getUserHistory(userId);
       res.send({ message: "ok", data: history });
