@@ -54,6 +54,21 @@ export default ({ app, broadcast, socket }: TRouteInput) => {
     res.send({ message: "ok", data: emotion});
   });
 
+  app.post('/today-anonymous', async (req: Request, res: Response) => {
+    const emotionInput = req.body as IEmotionInput;
+    console.log(emotionInput);
+    const emotion = await EmotionService.updateTodayEmotionAnonymous(emotionInput);
+    const series = await EmotionService.getStatData();
+    const stat = {
+      recent: {
+        time: Date.now()
+      },
+      series
+    }
+    socket.emit(EVENTS.UPDATE_DASHBOARD, stat);
+    res.send({ message: "ok", data: emotion});
+  });
+
   app.get('/history', async (req: Request, res: Response) => {
     const userId: string = req.query.userId as string;
     if (userId) {

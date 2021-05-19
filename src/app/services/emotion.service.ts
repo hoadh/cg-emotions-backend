@@ -5,6 +5,26 @@ import { SubEmotion } from '../models/sub-emotion';
 import { Emotions } from "../models/emotions.enum";
 import datetime from "../core/datetime";
 
+
+async function updateTodayEmotionAnonymous(emotion: IEmotionInput): Promise<Emotion> {
+  const localDate = datetime.getLocalDate(new Date());
+  const now = datetime.UTCDate(localDate.year, localDate.month, localDate.day);
+  let newEmotion: Emotion = {
+    emotion: emotion.emotion,
+    createdAt: now,
+    updatedAt: now,
+    timezoneOffset: now.getTimezoneOffset(),
+    history: [],
+    note: emotion.note
+  };
+
+  return await EmotionRepo.create(newEmotion)
+    .then((data: Emotion) => data)
+    .catch(error => {
+      throw error;
+    });
+}
+
 async function updateTodayEmotion(emotion: IEmotionInput): Promise<Emotion> {
 
   const userFilter = { userId: emotion.userId },
@@ -64,7 +84,6 @@ async function getUserHistory(userId: string): Promise<Emotion[]> {
 
 async function getStatData(): Promise<number[]> {
   const todayFilter = getDateFilter();
-
   const savedEmotions = await EmotionRepo.find(todayFilter);
   const { happy, good, normal, bad, anger } = countEmotions(savedEmotions);
   return new Promise( (resolve, reject) => {
@@ -87,6 +106,7 @@ async function getLastestUpdates(limit: number = 3):Promise<Emotion[]> {
 }
 
 export default {
+  updateTodayEmotionAnonymous,
   updateTodayEmotion,
   getStatData,
   getLastestUpdates,
