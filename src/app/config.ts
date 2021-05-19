@@ -4,5 +4,7 @@ dotenv.config();
 export default {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
-  MONGODB_URI: process.env.MONGODB_URI
+  MONGODB_URI: process.env.MONGODB_URI,
+  LOCALES: process.env.LOCALES,
+  TIMEZONE: process.env.TIMEZONE
 }

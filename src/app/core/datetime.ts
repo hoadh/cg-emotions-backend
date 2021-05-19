@@ -1,3 +1,5 @@
+import config from '../config';
+
 interface IDate { year: number; month: number; day: number }
 
 function UTCDate(year: number, month: number, day: number): Date {
@@ -5,8 +7,8 @@ function UTCDate(year: number, month: number, day: number): Date {
 }
 
 function getLocalDate(dateInput: Date): IDate {
-  const nDate = dateInput.toLocaleString("en-US", {
-    timeZone: "Asia/Ho_Chi_Minh"
+  const nDate = dateInput.toLocaleString(config.LOCALES, {
+    timeZone: config.TIMEZONE
   });
   let date = nDate.split(",")[0].split("/");
   return {
