@@ -66,6 +66,14 @@ export default ({ app, broadcast, socket }: TRouteInput) => {
       series
     }
     socket.emit(EVENTS.UPDATE_DASHBOARD, stat);
+
+    const recent = {
+      emotion: emotion.emotion,
+      user: { name: 'anonymous' },
+      updateAt: emotion.updatedAt,
+      note: (emotion.note?.isPublic) ? emotion.note : {}
+    }
+    socket.emit(EVENTS.RECENT_USER, recent);
     res.send({ message: "ok", data: emotion});
   });
 
